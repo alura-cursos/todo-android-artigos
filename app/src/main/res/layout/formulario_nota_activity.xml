@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activity.FormularioNotasActivity">
+    tools:context=".ui.activity.FormularioNotasActivity"
+    tools:viewBindingIgnore="true">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/formulario_notas_fragment_container_activity"
