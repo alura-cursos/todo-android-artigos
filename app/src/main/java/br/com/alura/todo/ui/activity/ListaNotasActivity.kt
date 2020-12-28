@@ -3,11 +3,14 @@ package br.com.alura.todo.ui.activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import br.com.alura.todo.asynctask.BuscaNotasTask
-import br.com.alura.todo.dao.NotaDao
+import androidx.lifecycle.lifecycleScope
 import br.com.alura.todo.database.AppDatabase
 import br.com.alura.todo.databinding.ListaNotasActivityBinding
 import br.com.alura.todo.ui.recyclerview.adapter.ListaNotasAdapter
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ListaNotasActivity : AppCompatActivity() {
 
@@ -33,9 +36,12 @@ class ListaNotasActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        BuscaNotasTask(dao) { notas ->
-            adapter.atualiza(notas)
-        }.execute()
+        lifecycleScope.launch(IO) {
+            val notas = dao.buscaTodas()
+            withContext(Main){
+                adapter.atualiza(notas)
+            }
+        }
     }
 
     private fun configuraFab() {

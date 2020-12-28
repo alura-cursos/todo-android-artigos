@@ -5,11 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import br.com.alura.todo.asynctask.SalvaNotaTask
-import br.com.alura.todo.dao.NotaDao
 import br.com.alura.todo.database.AppDatabase
 import br.com.alura.todo.databinding.FormularioNotaFragmentBinding
 import br.com.alura.todo.model.Nota
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FormularioNotaFragment : Fragment() {
 
@@ -52,9 +54,12 @@ class FormularioNotaFragment : Fragment() {
             titulo = titulo,
             descricao = descricao
         )
-        SalvaNotaTask(dao, nota) {
-            activity?.onBackPressed()
-        }.execute()
+        CoroutineScope(Dispatchers.IO).launch {
+            dao.salva(nota)
+            withContext(Dispatchers.Main) {
+                activity?.onBackPressed()
+            }
+        }
     }
 
     override fun onDestroyView() {
