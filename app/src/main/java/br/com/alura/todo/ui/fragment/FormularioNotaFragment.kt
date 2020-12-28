@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import br.com.alura.todo.asynctask.SalvaNotaTask
 import br.com.alura.todo.dao.NotaDao
+import br.com.alura.todo.database.AppDatabase
 import br.com.alura.todo.databinding.FormularioNotaFragmentBinding
 import br.com.alura.todo.model.Nota
 
@@ -13,6 +15,11 @@ class FormularioNotaFragment : Fragment() {
 
     private var _binding: FormularioNotaFragmentBinding? = null
     private val binding: FormularioNotaFragmentBinding get() = _binding!!
+    private val dao by lazy {
+        AppDatabase
+            .getInstance(requireContext())
+            .notaDao()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,9 +48,13 @@ class FormularioNotaFragment : Fragment() {
         val titulo = campoTitulo.text.toString()
         val campoDescricao = binding.formularioNotaDescricaoFragment
         val descricao = campoDescricao.text.toString()
-        val nota = Nota(titulo, descricao)
-        NotaDao().salva(nota)
-        activity?.onBackPressed()
+        val nota = Nota(
+            titulo = titulo,
+            descricao = descricao
+        )
+        SalvaNotaTask(dao, nota) {
+            activity?.onBackPressed()
+        }.execute()
     }
 
     override fun onDestroyView() {
